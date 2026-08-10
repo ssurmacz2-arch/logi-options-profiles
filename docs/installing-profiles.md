@@ -1,8 +1,14 @@
 # Installing a profile by hand
 
-Logi Options+ has no import button. It does, however, adopt a profile folder that simply appears in the right place — verified on Windows 11, August 2026.
+**Try the supported path first.** Logitech distributes profiles as `.lp4` / `.lp5` packages, which install through `LogiPluginServiceTool.exe install-package` and open by double-click — see [package-formats.md](package-formats.md). For moving a profile between machines, that is the right tool.
 
-Read [the test results](#what-was-actually-tested) before trusting this, and take a copy of your profiles first.
+This document covers the manual folder route, which matters when you do not have a package:
+
+- recovering a profile from an [`Applications.Backups` snapshot](backups.md), which stores folders, not `.lp*` files
+- inspecting or hand-editing a profile
+- scripted setup where invoking the installer is inconvenient
+
+Verified on Windows 11, Logi Options+ 2.5.926888, Logi Plugin Service 6.4.0.3079, August 2026. Read [the test results](#what-was-actually-tested) before trusting it, and take a copy of your profiles first.
 
 ---
 

@@ -41,7 +41,9 @@ Supporting directories alongside it:
 | `…\LogiPluginService\PluginSettings\` | Per-plugin settings blobs |
 | `…\LogiPluginService\PluginHosts\` | Runtime hosts for non-.NET plugins (e.g. Node) |
 
-Plugin packages install from `.lplug4` / `.lplug5` archives — both extensions are registered with the OS, so a package opens by double-click. Installed plugins are unpacked, so the folder above *is* the package contents.
+Plugin packages install from `.lplug4` / `.lplug5` archives, which are registered with the OS and open by double-click. Installed plugins are unpacked, so the folder above *is* the package contents.
+
+Do not confuse these with `.lp4` / `.lp5`, which carry **profiles** rather than plugins — see [package-formats.md](package-formats.md).
 
 ## Logs
 

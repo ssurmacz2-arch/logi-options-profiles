@@ -1,8 +1,8 @@
 # Logi Options+ Profiles
 
-Documentation and tooling for **Logi Options+ profiles** — the configuration files behind Actions Ring, MX Creative Console, and Smart Actions on Logitech MX devices.
+Documentation of the **on-disk format** behind Logi Options+ profiles — the files that back Actions Ring and the MX Creative Console — plus notes on local snapshots and profile diagnostics.
 
-Logi Options+ has no "export profile" button. Your profiles live in an undocumented JSON format buried in `%LOCALAPPDATA%`, and nobody has written down how it works. This repository does.
+Logitech supports importing and exporting profiles as `.lp4` / `.lp5` packages, and that is the right way to move a profile between machines. What is not documented anywhere is what those profiles actually *are* on disk: the JSON structure, where it lives, how actions reference each other, and what Options+ quietly keeps in the background. That is the gap this repository fills.
 
 ---
 
@@ -16,21 +16,23 @@ Logi Options+ has no "export profile" button. Your profiles live in an undocumen
 
 Each profile is a self-contained folder of about 60 KB. Full breakdown in [docs/file-locations.md](docs/file-locations.md).
 
+**What is the difference between `.lp4` and `.lplug4`?**
+
+`.lp4` / `.lp5` carry a **profile**; `.lplug4` / `.lplug5` carry a **plugin**. The registry ProgIDs are literally `Profile` and `Plugin`, and they route to different handler verbs. Details and the one inconsistency worth knowing in [docs/package-formats.md](docs/package-formats.md).
+
 **Does Logi Options+ back up my profiles?**
 
-Yes — and it never tells you. Options+ writes periodic ZIP snapshots of every profile for every device to:
+It writes periodic ZIP snapshots of the whole profile tree, without mentioning it in the UI:
 
 ```
 %LOCALAPPDATA%\Logi\LogiPluginService\Applications.Backups\backup_YYYY-MM-DD_HH-MM-SS.zip
 ```
 
-Details in [docs/backups.md](docs/backups.md).
+This is a convenience that happens to exist, not a documented feature with a support commitment — and it is a different thing from exporting a single profile. See [docs/backups.md](docs/backups.md).
 
 **Can I install a profile by copying a folder?**
 
-Yes. A profile folder placed into the `Profiles\` directory is picked up and appears in the Options+ UI — no index file to update, no import dialog needed. Tested; see [installing a profile by hand](docs/installing-profiles.md).
-
-The format also contains no absolute paths and no per-device serial numbers, and macro definitions are stored inline, so a profile folder is structurally self-contained. Cross-machine transfer is therefore expected to work but has not been tested on a second machine — see [Verification status](#verification-status).
+Yes, and it is tested — a folder placed into `Profiles\` is adopted by Options+ and appears in the UI, with no index to update. Treat it as the recovery path rather than the everyday one: for normal transfers use the supported `.lp4` / `.lp5` export. See [docs/installing-profiles.md](docs/installing-profiles.md).
 
 ---
 
@@ -38,51 +40,52 @@ The format also contains no absolute paths and no per-device serial numbers, and
 
 | Path | Contents |
 |---|---|
-| [`docs/profile-format.md`](docs/profile-format.md) | Anatomy of `ProfileInfo.json` — layout model, control IDs, action references, inline macro definitions |
+| [`docs/profile-format.md`](docs/profile-format.md) | Anatomy of `ProfileInfo.json` — layout model, control IDs, action references, macro storage |
 | [`docs/file-locations.md`](docs/file-locations.md) | Every path Options+ and Logi Plugin Service use: profiles, plugins, logs, backups |
-| [`docs/backups.md`](docs/backups.md) | The undocumented automatic backup mechanism, and how to read a snapshot |
-| [`docs/installing-profiles.md`](docs/installing-profiles.md) | Installing a profile by hand, with the test results behind the procedure |
-| [`docs/device-types.md`](docs/device-types.md) | `Loupedeck70/71/72` → real device names, taken from the official SDK enum |
+| [`docs/package-formats.md`](docs/package-formats.md) | `.lp4` / `.lp5` vs `.lplug4` / `.lplug5`, and which handler each one invokes |
+| [`docs/installing-profiles.md`](docs/installing-profiles.md) | Installing a profile folder by hand, with the test results behind the procedure |
+| [`docs/backups.md`](docs/backups.md) | The undocumented automatic snapshots, and how to read one |
+| [`docs/device-types.md`](docs/device-types.md) | `Loupedeck70/71/72` → real device names, from the shipped SDK enum |
 | `profiles/` | Shareable example profiles (see the folder README) |
-| `scripts/` | Export and install helpers |
-
-`profiles/` and `scripts/` are intentionally sparse right now — see [Roadmap](#roadmap).
+| `scripts/` | Validation and snapshot helpers |
 
 ---
 
 ## Why this exists
 
-Three reasons, in order of how much they mattered when starting:
-
-1. **Backup.** Profiles represent real setup work and live in one folder on one machine.
-2. **Portability.** Reproducing a setup on another computer currently means rebuilding it by hand, click by click.
-3. **Nobody documented the format.** Everything here was reconstructed by reading the files and the shipped assemblies of a legitimately installed copy.
+1. **Understanding the format.** Nobody had written it down. Everything here was reconstructed by reading the files and the shipped assemblies of a legitimately installed copy.
+2. **Local snapshots and recovery.** Knowing where profiles live, and that Options+ keeps its own ZIP snapshots, turns "I lost my setup" into a solvable problem.
+3. **Diagnostics.** A profile can install perfectly and still be half-dead if it references plugins the machine does not have. That failure mode is invisible in the UI.
 
 ---
 
 ## Verification status
 
-This project distinguishes between what was observed directly and what is inference. Nothing below is taken from model memory or vendor documentation unless stated.
+This project separates what was observed directly from what is inference. Nothing below comes from model memory.
 
-**Verified by direct observation** (Windows 11, Options+ with Actions Ring, August 2026):
+**Sample:** one Windows 11 machine, **Logi Options+ 2.5.926888**, **Logi Plugin Service 6.4.0.3079**, August 2026. **26 profiles** across three device types (`Loupedeck70` ×7, `Loupedeck71` ×7, `Loupedeck72` ×12), a mix of vendor defaults and user-created ones. Statements below describe that sample, not every profile that can exist.
+
+**Verified by direct observation:**
 
 - Profile folder layout and file inventory
 - `ProfileInfo.json` structure: layout modes, workspaces, press/rotate pages, `controlId` 0–7
-- Macro definitions (`ApplicationProfileMacroCommand`) are stored **inline in the same file**, including keyboard parameters — a profile does not reference an external macro database
-- No checksums, hashes, or signatures anywhere in the profile
-- No absolute paths and no device serial numbers in the profile
+- Where macros live: in the 7 sampled profiles that contain `ApplicationProfileMacroCommand` entries, the definitions — including keyboard parameters — are stored **inline in the profile**, not in the separate `macros.db`
+- No checksums, hashes, signatures, absolute paths, or device serial numbers were found **in the sampled profiles**
 - `Applications.Backups` ZIP snapshots exist and contain every profile for every device type
 - `DeviceType` enum values, read from the shipped `PluginApi.dll`
-- `LoupedeckService.dll` exposes `ApplicationProfileImporter.ImportProfile` and `TryParseLayoutFile`; the OS has `.lplug4` and `.lplug5` registered
-- **A profile folder copied into `Profiles\` is adopted by Options+ and shown in the UI.** The running service neither deletes nor rewrites it, it survives a service restart, and existing profiles are left untouched — confirmed by comparing SHA256 hashes of every `ProfileInfo.json` before and after
-- **No index needs updating.** `ApplicationInfo.json` records only `defaultProfileName`, not a profile list; profiles are discovered by scanning the directory
-- **`LogiPluginService` and `LogiPluginServiceExt` restart themselves** after being stopped, so an installer does not need to relaunch them
+- Registry associations: `.lp4` / `.lp5` → ProgID `Profile` → `install-package`; `.lplug4` → ProgID `Plugin` → `install-plugin`; `.lplug5` → ProgID `Plugin` → `install-package`
+- `LoupedeckService.dll` exposes `ApplicationProfileImporter.ImportProfile` and `TryParseLayoutFile` (which parses XML). **Which on-disk format those correspond to is not established** — do not assume they handle `.lp*`
+- A profile folder copied into `Profiles\` is adopted by Options+ and shown in the UI; the running service neither deletes nor rewrites it, it survives a service restart, and every pre-existing profile was SHA256-identical before and after
+- `ApplicationInfo.json` records only `defaultProfileName`, not a profile list — profiles are discovered by directory scan
+- `LogiPluginService` and `LogiPluginServiceExt` restart themselves after being stopped
 
-**Not yet verified — treat as open questions:**
+**Explicitly not established:**
 
-- Whether a profile authored on one machine loads correctly on a **different** machine. The install test used a profile cloned locally; nothing has crossed a machine boundary yet
-- Whether the Options+ UI exposes any user-facing profile import or export
-- What `ApplicationProfileImporter.TryParseLayoutFile` accepts, and whether that XML path is reachable by users
+- **Profiles are not universally self-contained.** 21 of the 26 sampled profiles reference actions outside `@Generic` — plugin-provided or native actions. Those are external dependencies: the profile will install and the slot will be dead if the dependency is missing
+- Where the export command sits in the current Actions Ring UI, and what a `.lp4` / `.lp5` package contains internally
+- Whether a profile or package moves cleanly to a **different** machine. Nothing here has crossed a machine boundary
+- Whether Smart Actions are stored in this format at all. A profile may *reference* a Smart Action; that is not the same as the format holding one, and their storage has not been examined
+- Whether `install-package` and `install-plugin` are interchangeable, given the `.lplug5` association
 - Whether the format is stable across Options+ releases
 
 Corrections and test reports are welcome — open an issue.
@@ -93,11 +96,12 @@ Corrections and test reports are welcome — open an issue.
 
 - [x] Document the profile format, file locations, backup mechanism, and device types
 - [x] Verify that a profile folder copied into place is adopted by Options+
-- [ ] `export.ps1` — collect local profiles into this repository
-- [ ] `install.ps1` — place a profile from this repository onto a machine
+- [x] Establish the `lp*` / `lplug*` split from registry associations
+- [ ] Document the supported export/import path in the current UI, and what a `.lp*` package holds
+- [ ] `verify.ps1` — validate a profile folder and report missing plugin dependencies
+- [ ] `snapshot.ps1` — timestamped local copy of the profile tree
 - [ ] Verify a profile transferred between two different machines
-- [ ] Example profiles, reviewed for privacy before publication
-- [ ] Browser-based profile generator (static, no backend)
+- [ ] Example profiles, built neutral rather than sanitised
 
 ---
 
@@ -105,17 +109,17 @@ Corrections and test reports are welcome — open an issue.
 
 Useful contributions, roughly in order of value:
 
-- **Test reports** — especially the open questions above, and results on other Options+ versions or device types
-- **Corrections** — if something here is wrong, an issue with the observed output beats a description
-- **Profiles** — see [`profiles/README.md`](profiles/README.md) for the privacy checklist. Profiles can embed application names, file paths, and account names; scrub before submitting
+- **Test reports** on the open questions above, on other Options+ versions, or on other device types
+- **Corrections** — an issue with the observed output beats a description
+- **Profiles** — see [`profiles/README.md`](profiles/README.md). Profiles embed application names, paths, and account names; build a neutral one rather than scrubbing a personal one
 
 ---
 
 ## Scope and safety
 
-Everything documented here was obtained by inspecting a legally installed copy of Logi Options+ on the author's own machine, for interoperability purposes. This repository contains **no vendor code, no decompiled binaries, and no circumvention of any licensing or protection mechanism** — only a description of an on-disk file format and paths.
+Everything here was obtained by inspecting a legally installed copy of Logi Options+ on the author's own machine, for interoperability purposes. This repository contains **no vendor code, no decompiled binaries, and no circumvention of any licensing or protection mechanism** — only a description of an on-disk file format and paths.
 
-Editing files under `%LOCALAPPDATA%` can break your Options+ configuration. Take a copy of the folder — or use the built-in snapshots described in [docs/backups.md](docs/backups.md) — before changing anything.
+Editing files under `%LOCALAPPDATA%` can break your Options+ configuration. Take a copy first — or use the built-in snapshots described in [docs/backups.md](docs/backups.md).
 
 ---
 

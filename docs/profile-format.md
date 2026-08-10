@@ -132,13 +132,17 @@ Options+ also keeps a `macros.db` SQLite file under `%LOCALAPPDATA%\LogiOptionsP
 
 ---
 
-## What makes a profile portable
+## Portability — and its limit
 
-Three properties, all verified by inspection:
+Three properties held across the sampled profiles:
 
-1. **No absolute paths.** A regex sweep for `X:\...` patterns over the whole file returns nothing.
+1. **No absolute paths.** A regex sweep for `X:\...` patterns returned nothing.
 2. **No device serial numbers or per-installation IDs.** Binding is to `deviceType` — a device *class*, not a physical unit.
-3. **Macros are inline**, so there is no external state to carry alongside.
+3. **Macros are inline.** In the sampled profiles that define macros, the definitions travel with the profile rather than living in `macros.db`.
+
+**But a profile is not automatically self-contained.** Actions that come from a plugin or from the native application integration are references, and the referenced code is not in the profile. In the 26-profile sample, **21 referenced actions outside `@Generic`**. Macros being inline says something about macros; it says nothing about a profile whose slots call into a plugin.
+
+The practical failure mode: a profile with plugin dependencies installs perfectly on a machine that lacks the plugin, and the affected slots simply do nothing. Nothing in the UI flags it. That is what `verify.ps1` is meant to catch.
 
 Options+ does accept a profile folder dropped into place: it is adopted, listed in the UI, and left unmodified, while existing profiles stay untouched. See [installing-profiles.md](installing-profiles.md) for the procedure and the test results.
 
