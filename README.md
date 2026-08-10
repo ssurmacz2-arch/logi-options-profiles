@@ -46,8 +46,8 @@ Yes, and it is tested — a folder placed into `Profiles\` is adopted by Options
 | [`docs/installing-profiles.md`](docs/installing-profiles.md) | Installing a profile folder by hand, with the test results behind the procedure |
 | [`docs/backups.md`](docs/backups.md) | The undocumented automatic snapshots, and how to read one |
 | [`docs/device-types.md`](docs/device-types.md) | `Loupedeck70/71/72` → real device names, from the shipped SDK enum |
-| `profiles/` | Shareable example profiles (see the folder README) |
-| `scripts/` | Validation and snapshot helpers |
+| [`profiles/`](profiles) | Shareable profiles, anonymised before publication |
+| [`scripts/`](scripts) | `verify.ps1` validation, `anonymize.ps1` publication prep |
 
 ---
 
@@ -102,7 +102,8 @@ Corrections and test reports are welcome — open an issue.
 - [x] `verify.ps1` — validate a profile folder and report missing plugin dependencies
 - [ ] `snapshot.ps1` — timestamped local copy of the profile tree
 - [ ] Verify a profile transferred between two different machines
-- [ ] Example profiles, built neutral rather than sanitised
+- [x] `anonymize.ps1` — strip machine-specific shortcuts, keep folder containers
+- [x] First anonymised profile published
 
 ---
 

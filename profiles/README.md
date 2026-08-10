@@ -1,6 +1,10 @@
 # Profiles
 
-Shareable Logi Options+ profiles. Empty for now — profiles land here once the loading behaviour in the [open questions](../README.md#verification-status) is confirmed, so that nothing gets published before it is known to work.
+Shareable Logi Options+ profiles.
+
+| Profile | Device | For |
+|---|---|---|
+| [`loupedeck72/general/starter`](loupedeck72/general/starter) | Actions Ring | General-purpose scaffold: four folders, personal contents stripped |
 
 ## Layout
 
@@ -17,13 +21,19 @@ profiles/<device-type>/<application>/<profile-name>/
 
 Mirroring the on-disk structure keeps installation a copy operation rather than a transformation.
 
+## Removing a shortcut in the UI does not remove it from the profile
+
+Verified on a real installation: after deleting file and folder shortcuts from the ring, **seven of eight path-bearing actions were still in `ProfileInfo.json`**, complete with absolute paths. They were no longer assigned to any slot, but the definitions — and the paths — remained in the profile's action library.
+
+Unassigning is not deleting. Do not rely on tidying up in the UI before publishing; run the tooling below.
+
 ## Privacy checklist before submitting
 
 A profile is a record of how someone works, and it embeds more than it looks like.
 
-**Run [`scripts/verify.ps1`](../scripts/verify.ps1) first** — it reports every absolute path in a profile, which is the leak that catches people out. A profile with "open file" or "launch application" actions carries full paths to your drives, project directories, and user folder. On a real machine that surfaced paths to personal projects and a home directory containing the user's name, in a profile that looked harmless in the UI.
+**Run [`scripts/anonymize.ps1`](../scripts/anonymize.ps1)**, which strips every path-bearing action while keeping folder containers intact, then **[`scripts/verify.ps1`](../scripts/verify.ps1)** to confirm nothing survived. A profile with "open file" or "launch application" actions carries full paths to your drives, project directories, and user folder. On a real machine that surfaced paths to personal projects and a home directory containing the user's name, in a profile that looked clean in the UI.
 
-Then **read the JSON yourself.** Check for:
+Then **read the JSON yourself.** Tooling catches paths; it cannot judge names. Check for:
 
 - **`displayName` on macros** — action labels routinely name applications, services, brokers, clients, or projects
 - **Application names and window titles** picked up from your machine

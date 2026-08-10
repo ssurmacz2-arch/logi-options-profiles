@@ -1,0 +1,34 @@
+{
+    "backgroundColor": 4278190080,
+    "items": [
+        {
+            "image": "PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4NCjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNNyAyNEM3IDIzLjQ0NzcgNy40NDc3MiAyMyA4IDIzSDE0Ljk2MzFDMTUuNTE1NCAyMyAxNS45NjMxIDIzLjQ0NzcgMTUuOTYzMSAyNEMxNS45NjMxIDI0LjU1MjMgMTUuNTE1NCAyNSAxNC45NjMxIDI1SDhDNy40NDc3MiAyNSA3IDI0LjU1MjMgNyAyNFoiIGZpbGw9IiMzMEU4NzIiLz4NCjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNNyAxOUM3IDE4LjQ0NzcgNy40NDc3MiAxOCA4IDE4SDE0Ljk2MzFDMTUuNTE1NCAxOCAxNS45NjMxIDE4LjQ0NzcgMTUuOTYzMSAxOUMxNS45NjMxIDE5LjU1MjMgMTUuNTE1NCAyMCAxNC45NjMxIDIwSDhDNy40NDc3MiAyMCA3IDE5LjU1MjMgNyAxOVoiIGZpbGw9IiMzMEU4NzIiLz4NCjxwYXRoIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBkPSJNNyA5QzcgOC40NDc3MiA3LjQ0NzcyIDggOCA4SDI0QzI0LjU1MjMgOCAyNSA4LjQ0NzcyIDI1IDlDMjUgOS41NTIyOCAyNC41NTIzIDEwIDI0IDEwSDhDNy40NDc3MiAxMCA3IDkuNTUyMjggNyA5WiIgZmlsbD0iIzMwRTg3MiIvPg0KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik03IDE0QzcgMTMuNDQ3NyA3LjQ0NzcyIDEzIDggMTNIMjRDMjQuNTUyMyAxMyAyNSAxMy40NDc3IDI1IDE0QzI1IDE0LjU1MjMgMjQuNTUyMyAxNSAyNCAxNUg4QzcuNDQ3NzIgMTUgNyAxNC41NTIzIDcgMTRaIiBmaWxsPSIjMzBFODcyIi8+DQo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTI2LjE3MzIgMjAuMzA0QzI3LjQyNjUgMjEuMDg3MyAyNy40MjY1IDIyLjkxMjcgMjYuMTczMiAyMy42OTZMMjEuMDYgMjYuODkxN0MxOS43Mjc5IDI3LjcyNDMgMTggMjYuNzY2NiAxOCAyNS4xOTU4VjE4LjgwNDJDMTggMTcuMjMzNCAxOS43Mjc5IDE2LjI3NTcgMjEuMDYgMTcuMTA4M0wyNi4xNzMyIDIwLjMwNFpNMjUuMTEzMiAyMkwyMCAxOC44MDQyTDIwIDI1LjE5NThMMjUuMTEzMiAyMloiIGZpbGw9IiMzMEU4NzIiLz4NCjwvc3ZnPg0K",
+            "imageFileName": null,
+            "imageColor": 4281395314,
+            "imageRotation": "None",
+            "isVisible": true,
+            "itemType": "Image",
+            "area": {
+                "x": 17,
+                "y": 0,
+                "width": 65,
+                "height": 65
+            }
+        },
+        {
+            "text": "Isn't a divorce, ain't it?",
+            "originalText": null,
+            "textColor": 4281395314,
+            "fontSize": 5,
+            "fontName": "Brown Logitech Pan Light",
+            "isVisible": true,
+            "itemType": "Text",
+            "area": {
+                "x": 0,
+                "y": 65,
+                "width": 100,
+                "height": 30
+            }
+        }
+    ]
+}

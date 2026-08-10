@@ -1,0 +1,426 @@
+{
+  "$type": "Loupedeck.Service.ApplicationProfile, LoupedeckService",
+  "name": "BA78990AAAC341CEA0FBC11FEEBFF88D",
+  "profileFlags": "None",
+  "displayName": "General starter",
+  "description": null,
+  "deviceType": "Loupedeck72",
+  "applicationName": "@_defaultwin",
+  "nativePluginName": "DefaultWin",
+  "hasNativePlugin": true,
+  "additionalNativePluginNames": [],
+  "lastModifiedTimeUtc": "2026-08-10T12:34:51.2381977Z",
+  "profileSettings": {
+    "$type": "Loupedeck.DictionaryNoCase`1[[System.String, System.Private.CoreLib]], PluginApi"
+  },
+  "actionImages90": null,
+  "actionImages60": null,
+  "wheelImages": null,
+  "actionColors": null,
+  "layout": {
+    "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayout7, LoupedeckService",
+    "deviceType": "Loupedeck72",
+    "profileFlags": "None",
+    "layoutModes": [
+      {
+        "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutMode7, LoupedeckService",
+        "deviceType": "Loupedeck72",
+        "modeName": "System",
+        "parentModeName": null,
+        "actions": null,
+        "dynamicButtonPages": null,
+        "dynamicEncoderPages": null,
+        "workspaces": [
+          {
+            "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutWorkspace7, LoupedeckService",
+            "name": "A6F358EC57244990AA4C2E565ECAB281",
+            "displayName": "Workspace 1",
+            "description": null,
+            "pressPages": [
+              {
+                "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutPage7, LoupedeckService",
+                "name": "3CA5904D9B6248E1B4AC1D454ECCC6C7",
+                "displayName": "Page (1)",
+                "description": null,
+                "controls": [
+                  {
+                    "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+                    "controlId": 0,
+                    "pressAction": "$@Generic___@ProfileAction___A01F667040824E729ACC6BE55D242F6C",
+                    "rotateAction": null
+                  },
+                  {
+                    "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+                    "controlId": 1,
+                    "pressAction": "$@Generic___@ProfileAction___2E31EFC868C3419C9E4804EA2C39D971",
+                    "rotateAction": null
+                  },
+                  {
+                    "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+                    "controlId": 2,
+                    "pressAction": "$WindowsPowerToys___Loupedeck.WindowsPowerToysPlugin.Actions.AdvancedPaste",
+                    "rotateAction": null
+                  },
+                  {
+                    "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+                    "controlId": 3,
+                    "pressAction": null,
+                    "rotateAction": null
+                  },
+                  {
+                    "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+                    "controlId": 4,
+                    "pressAction": null,
+                    "rotateAction": null
+                  },
+                  {
+                    "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+                    "controlId": 5,
+                    "pressAction": "",
+                    "rotateAction": null
+                  },
+                  {
+                    "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+                    "controlId": 6,
+                    "pressAction": "$@Generic___@ProfileAction___B7E89A0564A54AF993A43F83A990BDC1",
+                    "rotateAction": null
+                  },
+                  {
+                    "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+                    "controlId": 7,
+                    "pressAction": "$@Generic___@ProfileAction___3D231479A20A4612828407690A23E4D1",
+                    "rotateAction": null
+                  }
+                ]
+              }
+            ],
+            "rotatePages": [
+              {
+                "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutPage7, LoupedeckService",
+                "name": "01F0DB14A78D482883E234F7C1DC1709",
+                "displayName": "Dial Page",
+                "description": null,
+                "controls": [
+                  {
+                    "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+                    "controlId": 0,
+                    "pressAction": null,
+                    "rotateAction": null
+                  },
+                  {
+                    "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+                    "controlId": 1,
+                    "pressAction": null,
+                    "rotateAction": null
+                  },
+                  {
+                    "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+                    "controlId": 2,
+                    "pressAction": null,
+                    "rotateAction": null
+                  },
+                  {
+                    "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+                    "controlId": 3,
+                    "pressAction": null,
+                    "rotateAction": null
+                  },
+                  {
+                    "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+                    "controlId": 4,
+                    "pressAction": null,
+                    "rotateAction": null
+                  },
+                  {
+                    "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+                    "controlId": 5,
+                    "pressAction": null,
+                    "rotateAction": null
+                  },
+                  {
+                    "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+                    "controlId": 6,
+                    "pressAction": null,
+                    "rotateAction": null
+                  },
+                  {
+                    "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+                    "controlId": 7,
+                    "pressAction": null,
+                    "rotateAction": null
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "homeWorkspaceName": "A6F358EC57244990AA4C2E565ECAB281"
+      }
+    ],
+    "folderPages": [
+      {
+        "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutPage7, LoupedeckService",
+        "name": "B7E89A0564A54AF993A43F83A990BDC1",
+        "displayName": "Folder",
+        "description": "Group and nest multiple actions",
+        "controls": []
+      },
+      {
+        "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutPage7, LoupedeckService",
+        "name": "3D231479A20A4612828407690A23E4D1",
+        "displayName": "Folder",
+        "description": "Group and nest multiple actions",
+        "controls": [
+          {
+            "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+            "controlId": 0,
+            "pressAction": "",
+            "rotateAction": null
+          },
+          {
+            "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+            "controlId": 1,
+            "pressAction": "$PCMonitor___Loupedeck.PCMonitorPlugin.FPSDisplayCommand",
+            "rotateAction": null
+          },
+          {
+            "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+            "controlId": 2,
+            "pressAction": "$PCMonitor___Loupedeck.PCMonitorPlugin.CPUMonitorCommand",
+            "rotateAction": null
+          },
+          {
+            "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+            "controlId": 3,
+            "pressAction": "$PCMonitor___Loupedeck.PCMonitorPlugin.GPUMonitorCommand",
+            "rotateAction": null
+          },
+          {
+            "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+            "controlId": 4,
+            "pressAction": "$PCMonitor___Loupedeck.PCMonitorPlugin.MEMMonitorCommand",
+            "rotateAction": null
+          }
+        ]
+      },
+      {
+        "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutPage7, LoupedeckService",
+        "name": "A01F667040824E729ACC6BE55D242F6C",
+        "displayName": "Folder",
+        "description": "",
+        "controls": [
+          {
+            "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+            "controlId": 0,
+            "pressAction": "$PomoDeck___Loupedeck.PomoDeckPlugin.PomoDeckWidget",
+            "rotateAction": null
+          },
+          {
+            "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+            "controlId": 1,
+            "pressAction": "$@Generic___@AdjustmentAsCommand___$PomoDeck#¤%&+?Loupedeck.PomoDeckPlugin.PomoDeckDial",
+            "rotateAction": "$PomoDeck___Loupedeck.PomoDeckPlugin.PomoDeckDial"
+          },
+          {
+            "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+            "controlId": 2,
+            "pressAction": "$PomoDeck___Loupedeck.PomoDeckPlugin.SkipPhaseCommand",
+            "rotateAction": null
+          },
+          {
+            "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+            "controlId": 3,
+            "pressAction": "$PomoDeck___ResetLoupedeck.PomoDeckPlugin.PomoDeckDial",
+            "rotateAction": null
+          }
+        ]
+      },
+      {
+        "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutPage7, LoupedeckService",
+        "name": "2E31EFC868C3419C9E4804EA2C39D971",
+        "displayName": "Folder",
+        "description": "",
+        "controls": [
+          {
+            "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+            "controlId": 0,
+            "pressAction": "$AudioSwitcher___Loupedeck.AudioSwitcherPlugin.CycleAudioInputCommand",
+            "rotateAction": null
+          },
+          {
+            "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+            "controlId": 1,
+            "pressAction": "$AudioSwitcher___Loupedeck.AudioSwitcherPlugin.CycleAudioOutputCommand",
+            "rotateAction": null
+          },
+          {
+            "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+            "controlId": 2,
+            "pressAction": "$Spotify___ToggleMute",
+            "rotateAction": null
+          },
+          {
+            "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+            "controlId": 3,
+            "pressAction": "$@Generic___@AdjustmentAsCommand___$Spotify#¤%&+?SpotifyVolume",
+            "rotateAction": "$Spotify___SpotifyVolume"
+          },
+          {
+            "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+            "controlId": 4,
+            "pressAction": "$Spotify___PreviousTrack",
+            "rotateAction": null
+          },
+          {
+            "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+            "controlId": 5,
+            "pressAction": "$Spotify___NextTrack",
+            "rotateAction": null
+          },
+          {
+            "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+            "controlId": 6,
+            "pressAction": "$Spotify___ShufflePlay",
+            "rotateAction": null
+          },
+          {
+            "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+            "controlId": 7,
+            "pressAction": "$Spotify___ChangeRepeatState",
+            "rotateAction": null
+          },
+          {
+            "$type": "Loupedeck.Service.Devices.Loupedeck7Devices.ProfileLayoutControl7, LoupedeckService",
+            "controlId": 8,
+            "pressAction": "$@Generic___@ProfileAction___3565BE714EE745508A526EA93C010DCA",
+            "rotateAction": null
+          }
+        ]
+      }
+    ]
+  },
+  "macroCommands": [],
+  "macroAdjustments": [],
+  "profileCommands": [],
+  "profileAdjustments": [],
+  "conversionHistory": null,
+  "packageName": "BA78990AAAC341CEA0FBC11FEEBFF88D",
+  "packageVersion": "1.0.9658.27676",
+  "profileActions": [
+    {
+      "$type": "Loupedeck.Service.ApplicationProfileCommand, LoupedeckService",
+      "isCommand": true,
+      "name": "$@Generic___@ProfileAction___B7E89A0564A54AF993A43F83A990BDC1",
+      "templateActionName": "$@Generic___@OpenFolder",
+      "actionParameters": {
+        "$type": "Loupedeck.ActionEditorActionParameters, PluginApi",
+        "parameters": {
+          "$type": "Loupedeck.StringDictionaryNoCase, PluginApi",
+          "folderName": "B7E89A0564A54AF993A43F83A990BDC1"
+        },
+        "count": 1
+      },
+      "displayName": "Files",
+      "description": "Group and nest multiple actions",
+      "groupName": "Foldery",
+      "superGroupName": "@navigation",
+      "isProfileAction": true,
+      "isMultiState": false,
+      "isResetCommand": false,
+      "adjustmentName": null,
+      "states": null
+    },
+    {
+      "$type": "Loupedeck.Service.ApplicationProfileCommand, LoupedeckService",
+      "isCommand": true,
+      "name": "$@Generic___@ProfileAction___3D231479A20A4612828407690A23E4D1",
+      "templateActionName": "$@Generic___@OpenFolder",
+      "actionParameters": {
+        "$type": "Loupedeck.ActionEditorActionParameters, PluginApi",
+        "parameters": {
+          "$type": "Loupedeck.StringDictionaryNoCase, PluginApi",
+          "folderName": "3D231479A20A4612828407690A23E4D1"
+        },
+        "count": 1
+      },
+      "displayName": "System Monitor",
+      "description": "Group and nest multiple actions",
+      "groupName": "Foldery",
+      "superGroupName": "@navigation",
+      "isProfileAction": true,
+      "isMultiState": false,
+      "isResetCommand": false,
+      "adjustmentName": null,
+      "states": null
+    },
+    {
+      "$type": "Loupedeck.Service.ApplicationProfileCommand, LoupedeckService",
+      "isCommand": true,
+      "name": "$@Generic___@ProfileAction___A01F667040824E729ACC6BE55D242F6C",
+      "templateActionName": "$@Generic___@OpenFolder",
+      "actionParameters": {
+        "$type": "Loupedeck.ActionEditorActionParameters, PluginApi",
+        "parameters": {
+          "$type": "Loupedeck.StringDictionaryNoCase, PluginApi",
+          "folderName": "A01F667040824E729ACC6BE55D242F6C"
+        },
+        "count": 1
+      },
+      "displayName": "Pomo",
+      "description": "",
+      "groupName": "Folders",
+      "superGroupName": "@navigation",
+      "isProfileAction": true,
+      "isMultiState": false,
+      "isResetCommand": false,
+      "adjustmentName": null,
+      "states": null
+    },
+    {
+      "$type": "Loupedeck.Service.ApplicationProfileCommand, LoupedeckService",
+      "isCommand": true,
+      "name": "$@Generic___@ProfileAction___2E31EFC868C3419C9E4804EA2C39D971",
+      "templateActionName": "$@Generic___@OpenFolder",
+      "actionParameters": {
+        "$type": "Loupedeck.ActionEditorActionParameters, PluginApi",
+        "parameters": {
+          "$type": "Loupedeck.StringDictionaryNoCase, PluginApi",
+          "folderName": "2E31EFC868C3419C9E4804EA2C39D971"
+        },
+        "count": 1
+      },
+      "displayName": "Audio",
+      "description": "",
+      "groupName": "Folders",
+      "superGroupName": "@navigation",
+      "isProfileAction": true,
+      "isMultiState": false,
+      "isResetCommand": false,
+      "adjustmentName": null,
+      "states": null
+    },
+    {
+      "$type": "Loupedeck.Service.ApplicationProfileCommand, LoupedeckService",
+      "isCommand": true,
+      "name": "$@Generic___@ProfileAction___3565BE714EE745508A526EA93C010DCA",
+      "templateActionName": "$Spotify___StartPlaylistActionEditor",
+      "actionParameters": {
+        "$type": "Loupedeck.ActionEditorActionParameters, PluginApi",
+        "parameters": {
+          "$type": "Loupedeck.StringDictionaryNoCase, PluginApi",
+          "playlist": "spotify:playlist:38o2FoRfnDMKcqhtoMisAZ"
+        },
+        "count": 1
+      },
+      "displayName": "Isn't a divorce, ain't it?",
+      "description": null,
+      "groupName": "",
+      "superGroupName": "spotify",
+      "isProfileAction": true,
+      "isMultiState": false,
+      "isResetCommand": false,
+      "adjustmentName": null,
+      "states": null
+    }
+  ]
+}

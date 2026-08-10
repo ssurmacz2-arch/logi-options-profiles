@@ -37,6 +37,24 @@ Run against a real installation of 26 profiles, it found one missing plugin depe
 
 Tested on Windows PowerShell 5.1 and PowerShell 7.
 
+## `anonymize.ps1`
+
+Prepares a profile for publication by removing everything that points at a specific machine. Never writes to the source.
+
+```powershell
+.\anonymize.ps1 -Path <profile> -Destination <out> -NewName "General starter" -RegenerateGuid -DropMissingPlugins
+```
+
+Removes actions that embed a filesystem location — `@OpenDirectory`, `@ShellExecute`, `@ExecuteApplication`, and anything else still carrying a drive-letter path — together with their icons, and clears the slots that pointed at them.
+
+**Folder containers are kept and left empty.** They carry the structure of the profile, which is the part worth sharing; the destinations are the part that is personal and worthless to anyone else.
+
+- `-RegenerateGuid` issues a fresh profile GUID and writes into a subdirectory named after it, so the output is directly installable and does not collide with the source
+- `-DropMissingPlugins` clears slots belonging to plugins not installed locally, so a published profile does not ship dependencies even its author lacks
+- `metadata/LoupedeckPackage.yaml` is updated in step, so the manifest cannot contradict the profile
+
+It exits non-zero if any absolute path survives. Display names are left alone and reported for manual review — only the author knows which product, broker, or client names matter.
+
 ## Planned
 
 | Script | Purpose |
