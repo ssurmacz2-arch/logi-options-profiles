@@ -55,14 +55,14 @@ Removes actions that embed a filesystem location — `@OpenDirectory`, `@ShellEx
 
 It exits non-zero if any absolute path survives. Display names are left alone and reported for manual review — only the author knows which product, broker, or client names matter.
 
-## Planned
+## `snapshot.ps1`
 
-| Script | Purpose |
-|---|---|
-| `snapshot.ps1` | Timestamped copy of the profile tree, with a hash manifest so drift is visible |
+Timestamped copy of the profile tree with a SHA256 manifest. Options+ keeps its own snapshots, but on an undocumented schedule with no retention guarantee — this one you control.
 
-## Conventions
+```powershell
+.\snapshot.ps1              # take one (default: %USERPROFILE%\logi-profile-snapshots)
+.\snapshot.ps1 -List        # what you have
+.\snapshot.ps1 -Compare     # drift against the most recent snapshot
+```
 
-- Windows PowerShell 5.1 and PowerShell 7 both supported; no external modules
-- Read-only by default; anything that writes takes an explicit switch
-- Nothing stops or restarts Options+ services unless asked to
+Every copy is verified by comparing file hashes against the source before reporting success; a mismatch exits non-zero. `-Compare` reports added, removed, and modified files, which doubles as a way to see exactly what Options+ changed after any operation.

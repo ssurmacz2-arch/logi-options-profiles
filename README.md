@@ -47,7 +47,7 @@ Yes, and it is tested — a folder placed into `Profiles\` is adopted by Options
 | [`docs/backups.md`](docs/backups.md) | The undocumented automatic snapshots, and how to read one |
 | [`docs/device-types.md`](docs/device-types.md) | `Loupedeck70/71/72` → real device names, from the shipped SDK enum |
 | [`profiles/`](profiles) | Shareable profiles, anonymised before publication |
-| [`scripts/`](scripts) | `verify.ps1` validation, `anonymize.ps1` publication prep |
+| [`scripts/`](scripts) | `verify.ps1` validation, `anonymize.ps1` publication prep, `snapshot.ps1` backup |
 
 ---
 
@@ -100,7 +100,7 @@ Corrections and test reports are welcome — open an issue.
 - [x] Establish the `lp*` / `lplug*` split from registry associations
 - [ ] Document the supported export/import path in the current UI, and what a `.lp*` package holds
 - [x] `verify.ps1` — validate a profile folder and report missing plugin dependencies
-- [ ] `snapshot.ps1` — timestamped local copy of the profile tree
+- [x] `snapshot.ps1` — timestamped local copy of the profile tree, hash-verified
 - [ ] Verify a profile transferred between two different machines
 - [x] `anonymize.ps1` — strip machine-specific shortcuts, keep folder containers
 - [x] First anonymised profile published

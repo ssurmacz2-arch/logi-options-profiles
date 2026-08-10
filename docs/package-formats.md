@@ -45,7 +45,20 @@ This is the same manifest mechanism plugin packages use — a plugin's `Loupedec
 
 The strong implication is that a `.lp5` package is an archive of exactly this folder, and that `install-package` reads the manifest to decide what it is handling. That would also explain why `.lplug5` routes to `install-package` rather than `install-plugin`: one verb, manifest decides.
 
-**This is inference, not a tested fact.** Nobody has yet packed a folder into a `.lp5` and installed it. If you try it, the result is worth an issue either way.
+**Tested, and it did not work.** Two attempts, both on a profile folder that installs correctly when copied into place by hand:
+
+| Attempt | Archive layout | Result |
+|---|---|---|
+| 1 | profile contents at archive root (`ProfileInfo.json`, `metadata/`, …) | exit code 0, no output, **nothing installed** |
+| 2 | a single `<GUID>/` directory at archive root | exit code 0, no output, **nothing installed** |
+
+Verified by hashing the whole profile tree before and after each attempt: zero files added, removed, or modified.
+
+`LogiPluginServiceTool.exe` returns 0 and prints nothing regardless of arguments — including with no arguments at all — so the exit code says nothing about success. Double-clicking would run the same command the registry already points at, so it is unlikely to behave differently.
+
+What this rules out: naively zipping a profile folder is not how a `.lp5` is made. What it does not rule out: the manifest is real and says `Profile5`, so a packaged form exists. Something about the archive layout, an additional required file, or the invocation is still missing.
+
+The reliable way to answer this is to export a profile from the Options+ UI and look at what comes out. That is the open question below.
 
 ## Open questions
 
