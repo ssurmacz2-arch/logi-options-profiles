@@ -1,12 +1,10 @@
 # Scripts
 
-PowerShell helpers for getting profiles in and out of a machine. Empty for now — the scripts are blocked on one unanswered question.
+PowerShell helpers for getting profiles in and out of a machine.
 
-## Why nothing here yet
+## Status
 
-`install.ps1` only makes sense if Options+ actually loads a profile folder placed on disk by something other than itself. That is [untested](../README.md#verification-status): the plugin service runs continuously and holds profile state in memory, so it may simply overwrite whatever is put there.
-
-Shipping an installer before confirming that would mean shipping something that silently does nothing. The test comes first.
+The question that blocked these — whether Options+ adopts a profile folder placed on disk by something other than itself — has been [answered: it does](../docs/installing-profiles.md). The manual procedure works, so the scripts are now just automation of known-good steps rather than a bet on untested behaviour.
 
 ## Planned
 

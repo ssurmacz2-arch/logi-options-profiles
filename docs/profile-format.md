@@ -140,7 +140,9 @@ Three properties, all verified by inspection:
 2. **No device serial numbers or per-installation IDs.** Binding is to `deviceType` — a device *class*, not a physical unit.
 3. **Macros are inline**, so there is no external state to carry alongside.
 
-What this does **not** prove: that Options+ will accept a profile folder dropped in from elsewhere. The service holds state in memory and may rewrite files on shutdown. Treat portability as structurally plausible and empirically untested — see the open questions in the README.
+Options+ does accept a profile folder dropped into place: it is adopted, listed in the UI, and left unmodified, while existing profiles stay untouched. See [installing-profiles.md](installing-profiles.md) for the procedure and the test results.
+
+The remaining gap is that the tested profile originated on the same machine. Crossing a machine boundary is untested, and the realistic failure mode there is not the format but the environment — a profile referencing a plugin the target machine does not have will install cleanly and leave dead slots.
 
 ---
 
@@ -148,7 +150,7 @@ What this does **not** prove: that Options+ will accept a profile folder dropped
 
 If you experiment, assume you will break something at least once.
 
-- Stop `LogiPluginService` before editing, or expect your changes to be overwritten from memory
+- Restart `LogiPluginService` after editing so the change is picked up; both service processes come back on their own
 - Keep `$type` strings byte-identical — they select the deserializer target
 - Keep the GUID in `pressAction` consistent with the macro `name` and with the icon filenames
 - The folder name must match the `name` field

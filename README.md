@@ -26,9 +26,11 @@ Yes — and it never tells you. Options+ writes periodic ZIP snapshots of every 
 
 Details in [docs/backups.md](docs/backups.md).
 
-**Can I move a profile to another PC?**
+**Can I install a profile by copying a folder?**
 
-The format contains no absolute paths and no per-device serial numbers, and macro definitions are stored inline — so a profile folder is structurally self-contained. See [docs/profile-format.md](docs/profile-format.md) for the anatomy, and [Verification status](#verification-status) for what has and has not been tested.
+Yes. A profile folder placed into the `Profiles\` directory is picked up and appears in the Options+ UI — no index file to update, no import dialog needed. Tested; see [installing a profile by hand](docs/installing-profiles.md).
+
+The format also contains no absolute paths and no per-device serial numbers, and macro definitions are stored inline, so a profile folder is structurally self-contained. Cross-machine transfer is therefore expected to work but has not been tested on a second machine — see [Verification status](#verification-status).
 
 ---
 
@@ -39,6 +41,7 @@ The format contains no absolute paths and no per-device serial numbers, and macr
 | [`docs/profile-format.md`](docs/profile-format.md) | Anatomy of `ProfileInfo.json` — layout model, control IDs, action references, inline macro definitions |
 | [`docs/file-locations.md`](docs/file-locations.md) | Every path Options+ and Logi Plugin Service use: profiles, plugins, logs, backups |
 | [`docs/backups.md`](docs/backups.md) | The undocumented automatic backup mechanism, and how to read a snapshot |
+| [`docs/installing-profiles.md`](docs/installing-profiles.md) | Installing a profile by hand, with the test results behind the procedure |
 | [`docs/device-types.md`](docs/device-types.md) | `Loupedeck70/71/72` → real device names, taken from the official SDK enum |
 | `profiles/` | Shareable example profiles (see the folder README) |
 | `scripts/` | Export and install helpers |
@@ -71,12 +74,15 @@ This project distinguishes between what was observed directly and what is infere
 - `Applications.Backups` ZIP snapshots exist and contain every profile for every device type
 - `DeviceType` enum values, read from the shipped `PluginApi.dll`
 - `LoupedeckService.dll` exposes `ApplicationProfileImporter.ImportProfile` and `TryParseLayoutFile`; the OS has `.lplug4` and `.lplug5` registered
+- **A profile folder copied into `Profiles\` is adopted by Options+ and shown in the UI.** The running service neither deletes nor rewrites it, it survives a service restart, and existing profiles are left untouched — confirmed by comparing SHA256 hashes of every `ProfileInfo.json` before and after
+- **No index needs updating.** `ApplicationInfo.json` records only `defaultProfileName`, not a profile list; profiles are discovered by scanning the directory
+- **`LogiPluginService` and `LogiPluginServiceExt` restart themselves** after being stopped, so an installer does not need to relaunch them
 
 **Not yet verified — treat as open questions:**
 
-- Whether Options+ picks up a **hand-edited** `ProfileInfo.json`, or overwrites it from in-memory state. The service runs continuously; a safe test requires stopping it first
-- Whether the Options+ UI exposes any user-facing profile import
-- Whether a profile authored on one machine loads correctly on a different machine
+- Whether a profile authored on one machine loads correctly on a **different** machine. The install test used a profile cloned locally; nothing has crossed a machine boundary yet
+- Whether the Options+ UI exposes any user-facing profile import or export
+- What `ApplicationProfileImporter.TryParseLayoutFile` accepts, and whether that XML path is reachable by users
 - Whether the format is stable across Options+ releases
 
 Corrections and test reports are welcome — open an issue.
@@ -86,9 +92,10 @@ Corrections and test reports are welcome — open an issue.
 ## Roadmap
 
 - [x] Document the profile format, file locations, backup mechanism, and device types
-- [ ] Verify hand-edited profile loading (blocks everything below)
+- [x] Verify that a profile folder copied into place is adopted by Options+
 - [ ] `export.ps1` — collect local profiles into this repository
 - [ ] `install.ps1` — place a profile from this repository onto a machine
+- [ ] Verify a profile transferred between two different machines
 - [ ] Example profiles, reviewed for privacy before publication
 - [ ] Browser-based profile generator (static, no backend)
 

@@ -53,13 +53,14 @@ The exact trigger and retention policy are **not established**. Do not treat thi
 
 ## Restoring
 
-There is no documented restore path, and dropping files back into the live `Applications` tree while the service is running is untested — see the open questions in the [README](../README.md#verification-status).
+There is no documented restore path, but the mechanism it would rely on is [tested](installing-profiles.md): a profile folder placed into the live tree is adopted by Options+, and the running service neither deletes nor rewrites it.
 
-Minimum sensible precautions:
+Sensible order:
 
-1. Stop `LogiPluginService`
-2. Copy the current live folder somewhere safe first
-3. Put the recovered profile folder in place, keeping the GUID folder name consistent with the `name` field inside `ProfileInfo.json`
-4. Start the service and check the Options+ UI before assuming success
+1. Copy the current live folder somewhere safe first
+2. Extract only the profile folder you want back, into the matching `<DeviceType>\<application>\Profiles\` path
+3. Keep the GUID folder name consistent with the `name` field inside `ProfileInfo.json`
+4. Restart the plugin service — `Stop-Process -Name LogiPluginServiceExt,LogiPluginService -Force`; both return by themselves
+5. Check the Options+ UI before assuming success
 
-If you try this, a report of what happened would be a genuinely useful issue.
+Restoring a snapshot wholesale over a live tree has not been tested, and would overwrite anything created since the snapshot was taken. Recover the profiles you need rather than the whole archive.
