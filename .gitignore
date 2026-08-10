@@ -1,0 +1,28 @@
+# Never commit secrets
+.env
+.env.*
+*.key
+*.pem
+
+# Never commit raw vendor material or full machine snapshots.
+# Backup archives are the whole Applications tree and may include
+# profiles you have not reviewed for privacy.
+*.zip
+backup_*/
+_private/
+_raw/
+
+# Vendor binaries and debug symbols do not belong in this repository
+*.dll
+*.exe
+*.pdb
+
+# Staging area for profiles awaiting the privacy review in profiles/README.md
+profiles/_staging/
+
+# OS and editor noise
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/
