@@ -70,7 +70,8 @@ This project separates what was observed directly from what is inference. Nothin
 - Profile folder layout and file inventory
 - `ProfileInfo.json` structure: layout modes, workspaces, press/rotate pages, `controlId` 0–7
 - Where macros live: in the 7 sampled profiles that contain `ApplicationProfileMacroCommand` entries, the definitions — including keyboard parameters — are stored **inline in the profile**, not in the separate `macros.db`
-- No checksums, hashes, signatures, absolute paths, or device serial numbers were found **in the sampled profiles**
+- No checksums, hashes, signatures, or device serial numbers were found **in any sampled profile**
+- **Absolute paths do occur.** Any action that opens a file, folder, or application stores a full path — `C:\Program Files\...`, user directories, other drives. Profiles without such actions contain none, which is what made an earlier version of this document wrongly claim they never appear. This matters twice: for portability, and because those paths describe the author's machine
 - `Applications.Backups` ZIP snapshots exist and contain every profile for every device type
 - `DeviceType` enum values, read from the shipped `PluginApi.dll`
 - Registry associations: `.lp4` / `.lp5` → ProgID `Profile` → `install-package`; `.lplug4` → ProgID `Plugin` → `install-plugin`; `.lplug5` → ProgID `Plugin` → `install-package`
@@ -98,7 +99,7 @@ Corrections and test reports are welcome — open an issue.
 - [x] Verify that a profile folder copied into place is adopted by Options+
 - [x] Establish the `lp*` / `lplug*` split from registry associations
 - [ ] Document the supported export/import path in the current UI, and what a `.lp*` package holds
-- [ ] `verify.ps1` — validate a profile folder and report missing plugin dependencies
+- [x] `verify.ps1` — validate a profile folder and report missing plugin dependencies
 - [ ] `snapshot.ps1` — timestamped local copy of the profile tree
 - [ ] Verify a profile transferred between two different machines
 - [ ] Example profiles, built neutral rather than sanitised

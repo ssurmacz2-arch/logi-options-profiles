@@ -134,11 +134,20 @@ Options+ also keeps a `macros.db` SQLite file under `%LOCALAPPDATA%\LogiOptionsP
 
 ## Portability — and its limit
 
-Three properties held across the sampled profiles:
+Two properties held across every sampled profile:
 
-1. **No absolute paths.** A regex sweep for `X:\...` patterns returned nothing.
-2. **No device serial numbers or per-installation IDs.** Binding is to `deviceType` — a device *class*, not a physical unit.
-3. **Macros are inline.** In the sampled profiles that define macros, the definitions travel with the profile rather than living in `macros.db`.
+1. **No device serial numbers or per-installation IDs.** Binding is to `deviceType` — a device *class*, not a physical unit.
+2. **Macros are inline.** In the sampled profiles that define macros, the definitions travel with the profile rather than living in `macros.db`.
+
+**Absolute paths, however, do appear.** Any action that opens a file, folder, or application embeds a full path:
+
+```
+C:\Program Files\<vendor>\<app>.exe||||C:\Program Files\<vendor>
+```
+
+The `||||` separates the target from its working directory. Profiles built only from keyboard shortcuts contain no paths at all, which is exactly why sampling a single such profile produced the wrong conclusion in an earlier version of this document. Run [`scripts/verify.ps1`](../scripts/verify.ps1) to see what a given profile actually carries.
+
+Two consequences: a path-bearing profile is tied to the layout of the machine that made it, and it describes that machine to anyone who reads it.
 
 **But a profile is not automatically self-contained.** Actions that come from a plugin or from the native application integration are references, and the referenced code is not in the profile. In the 26-profile sample, **21 referenced actions outside `@Generic`**. Macros being inline says something about macros; it says nothing about a profile whose slots call into a plugin.
 

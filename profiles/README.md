@@ -19,7 +19,11 @@ Mirroring the on-disk structure keeps installation a copy operation rather than 
 
 ## Privacy checklist before submitting
 
-A profile is a record of how someone works, and it embeds more than it looks like. **Read your own `ProfileInfo.json` before publishing it.** Check for:
+A profile is a record of how someone works, and it embeds more than it looks like.
+
+**Run [`scripts/verify.ps1`](../scripts/verify.ps1) first** — it reports every absolute path in a profile, which is the leak that catches people out. A profile with "open file" or "launch application" actions carries full paths to your drives, project directories, and user folder. On a real machine that surfaced paths to personal projects and a home directory containing the user's name, in a profile that looked harmless in the UI.
+
+Then **read the JSON yourself.** Check for:
 
 - **`displayName` on macros** — action labels routinely name applications, services, brokers, clients, or projects
 - **Application names and window titles** picked up from your machine
