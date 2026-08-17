@@ -47,7 +47,7 @@ Yes, and it is tested — a folder placed into `Profiles\` is adopted by Options
 | [`docs/backups.md`](docs/backups.md) | The undocumented automatic snapshots, and how to read one |
 | [`docs/device-types.md`](docs/device-types.md) | `Loupedeck70/71/72` → real device names, from the shipped SDK enum |
 | [`profiles/`](profiles) | Shareable profiles, anonymised before publication |
-| [`scripts/`](scripts) | `verify.ps1` validation, `anonymize.ps1` publication prep, `snapshot.ps1` backup |
+| [`scripts/`](scripts) | Tested `verify.ps1` validation, staged full-tree `anonymize.ps1` publication prep, and integrity-checked `snapshot.ps1` backup |
 
 ---
 

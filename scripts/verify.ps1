@@ -67,10 +67,20 @@ function Get-InstalledPlugin {
 
 function Find-Profile {
     param([string] $Root)
-    if (Test-Path (Join-Path $Root 'ProfileInfo.json')) { return @(Get-Item $Root) }
-    if (-not (Test-Path $Root)) { throw "Path not found: $Root" }
-    return @(Get-ChildItem $Root -Recurse -Filter 'ProfileInfo.json' -ErrorAction SilentlyContinue |
-             ForEach-Object { $_.Directory })
+    if (-not (Test-Path -LiteralPath $Root)) { throw "Path not found: $Root" }
+
+    $rootItem = Get-Item -LiteralPath $Root
+    if (-not $rootItem.PSIsContainer) { throw "Path is not a directory: $Root" }
+    if (Test-Path -LiteralPath (Join-Path $Root 'ProfileInfo.json')) { return @($rootItem) }
+
+    $profiles = @(Get-ChildItem -LiteralPath $Root -Recurse -Filter 'ProfileInfo.json' -File -ErrorAction SilentlyContinue |
+                  ForEach-Object { $_.Directory })
+
+    # An explicitly supplied directory with no ProfileInfo.json is itself an
+    # invalid profile candidate. Returning no results used to produce warning
+    # text and exit 0, which was a false green for automation.
+    if ($profiles.Count -eq 0) { return @($rootItem) }
+    return $profiles
 }
 
 function Test-Profile {
@@ -79,7 +89,8 @@ function Test-Profile {
     $errors = New-Object System.Collections.ArrayList
     $warnings = New-Object System.Collections.ArrayList
     $result = [ordered]@{
-        Path = $Dir.FullName; Name = $null; DeviceType = $null; Application = $null
+        Path = $Dir.FullName; Name = $null; DisplayName = '(unreadable profile)'
+        DeviceType = $null; Application = $null
         Slots = 0; Dependencies = @(); MissingPlugins = @()
         Errors = @(); Warnings = @(); Ok = $false
     }
@@ -146,8 +157,15 @@ function Test-Profile {
         }
     }
 
-    # Absolute paths are a portability and privacy smell.
-    $abs = [regex]::Matches($raw, '[A-Za-z]:\\\\[^"]{3,}') | ForEach-Object { $_.Value } | Select-Object -Unique
+    # Absolute drive and UNC paths are a portability and privacy smell. The
+    # JSON source escapes backslashes, so both patterns accept repeated slashes.
+    $pathPatterns = @(
+        '[A-Za-z]:\\\\[^"]{3,}',
+        '(?i)(?<![A-Za-z0-9_:\\/])(?:\\{2,}|/{2,})[^\\/\x00\r\n"''<>|]+[\\/]+[^\\/\x00\r\n"''<>|]+'
+    )
+    $abs = @($pathPatterns | ForEach-Object {
+        [regex]::Matches($raw, $_) | ForEach-Object { $_.Value }
+    } | Select-Object -Unique)
     foreach ($a in @($abs)) { [void]$warnings.Add("Absolute path found: $a") }
 
     $result.Errors = $errors.ToArray()
@@ -163,11 +181,11 @@ if (-not $Path) { $Path = Join-Path $env:LOCALAPPDATA 'Logi\LogiPluginService\Ap
 
 $installed = Get-InstalledPlugin
 $dirs = Find-Profile -Root $Path
-if (@($dirs).Count -eq 0) { Write-Warning "No profiles found under: $Path"; exit 0 }
 
 $results = foreach ($d in $dirs) { Test-Profile -Dir $d -Installed $installed }
+$failed = @($results | Where-Object { -not $_.Ok }).Count
 
-if ($Json) { $results | ConvertTo-Json -Depth 5; exit 0 }
+if ($Json) { $results | ConvertTo-Json -Depth 5; exit ([int]($failed -gt 0)) }
 
 Write-Host ""
 Write-Host "Logi Options+ profile check" -ForegroundColor Cyan
@@ -195,7 +213,6 @@ foreach ($r in $results) {
     }
 }
 
-$failed = @($results | Where-Object { -not $_.Ok }).Count
 $warned = @($results | Where-Object { $_.Ok -and @($_.Warnings).Count -gt 0 }).Count
 $allMissing = @($results | ForEach-Object { $_.MissingPlugins } | Sort-Object -Unique)
 

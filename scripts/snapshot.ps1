@@ -48,22 +48,145 @@ if (-not (Test-Path $Source)) { throw "Profile tree not found: $Source" }
 
 function Get-Manifest {
     param([string] $Root)
-    $items = Get-ChildItem $Root -Recurse -File -Force
+    $items = Get-ChildItem -LiteralPath $Root -Recurse -File -Force
     $out = New-Object System.Collections.ArrayList
     foreach ($f in $items) {
         [void]$out.Add([pscustomobject]@{
             Path = $f.FullName.Substring($Root.Length).TrimStart('\')
             Size = $f.Length
-            Hash = (Get-FileHash $f.FullName -Algorithm SHA256).Hash
+            Hash = (Get-FileHash -LiteralPath $f.FullName -Algorithm SHA256).Hash
         })
     }
     return $out
 }
 
+function Get-NormalizedFullPath {
+    param([string] $Path)
+
+    $fullPath = [System.IO.Path]::GetFullPath($Path)
+    $root = [System.IO.Path]::GetPathRoot($fullPath)
+    while ($fullPath.Length -gt $root.Length -and
+           ($fullPath.EndsWith([string][System.IO.Path]::DirectorySeparatorChar) -or
+            $fullPath.EndsWith([string][System.IO.Path]::AltDirectorySeparatorChar))) {
+        $fullPath = $fullPath.Substring(0, $fullPath.Length - 1)
+    }
+    return $fullPath
+}
+
+function Test-PathIsSameOrDescendant {
+    param(
+        [string] $ParentPath,
+        [string] $CandidatePath
+    )
+
+    $parent = Get-NormalizedFullPath -Path $ParentPath
+    $candidate = Get-NormalizedFullPath -Path $CandidatePath
+    if ($candidate.Equals($parent, [System.StringComparison]::OrdinalIgnoreCase)) { return $true }
+
+    $prefix = $parent + [System.IO.Path]::DirectorySeparatorChar
+    return $candidate.StartsWith($prefix, [System.StringComparison]::OrdinalIgnoreCase)
+}
+
+function Assert-NoReparsePointInExistingPath {
+    param(
+        [string] $Path,
+        [string] $Label
+    )
+
+    $current = Get-NormalizedFullPath -Path $Path
+    while (-not (Test-Path -LiteralPath $current)) {
+        $parent = [System.IO.Path]::GetDirectoryName($current)
+        if ([string]::IsNullOrWhiteSpace($parent) -or $parent -eq $current) { return }
+        $current = $parent
+    }
+
+    while ($true) {
+        $item = Get-Item -LiteralPath $current -Force
+        if (($item.Attributes -band [System.IO.FileAttributes]::ReparsePoint) -ne 0) {
+            throw "$Label path traverses a junction, symbolic link, or other reparse point: $current"
+        }
+
+        $parent = [System.IO.Path]::GetDirectoryName($current)
+        if ([string]::IsNullOrWhiteSpace($parent) -or $parent -eq $current) { break }
+        $current = $parent
+    }
+}
+
+function Assert-NoReparsePointInTree {
+    param(
+        [string] $Root,
+        [string] $Label
+    )
+
+    if (-not (Test-Path -LiteralPath $Root -PathType Container)) { return }
+    $rootItem = Get-Item -LiteralPath $Root -Force
+    if (($rootItem.Attributes -band [System.IO.FileAttributes]::ReparsePoint) -ne 0) {
+        throw "$Label tree contains a junction, symbolic link, or other reparse point: $($rootItem.FullName)"
+    }
+
+    $pending = New-Object 'System.Collections.Generic.Stack[System.IO.DirectoryInfo]'
+    $pending.Push([System.IO.DirectoryInfo] $rootItem)
+    while ($pending.Count -gt 0) {
+        $directory = $pending.Pop()
+        foreach ($child in $directory.GetFileSystemInfos()) {
+            if (($child.Attributes -band [System.IO.FileAttributes]::ReparsePoint) -ne 0) {
+                throw "$Label tree contains a junction, symbolic link, or other reparse point: $($child.FullName)"
+            }
+            if ($child -is [System.IO.DirectoryInfo]) { $pending.Push($child) }
+        }
+    }
+}
+
+function Test-ManifestMatch {
+    param(
+        [object[]] $Expected,
+        [object[]] $Actual
+    )
+
+    $expectedItems = @($Expected)
+    $actualItems = @($Actual)
+    if ($expectedItems.Count -ne $actualItems.Count) { return $false }
+
+    $expectedMap = @{}
+    foreach ($file in $expectedItems) {
+        $path = [string]$file.Path
+        if ($expectedMap.ContainsKey($path)) { return $false }
+        $expectedMap[$path] = [pscustomobject]@{
+            Size = [long]$file.Size
+            Hash = [string]$file.Hash
+        }
+    }
+
+    $actualMap = @{}
+    foreach ($file in $actualItems) {
+        $path = [string]$file.Path
+        if ($actualMap.ContainsKey($path)) { return $false }
+        $actualMap[$path] = [pscustomobject]@{
+            Size = [long]$file.Size
+            Hash = [string]$file.Hash
+        }
+    }
+
+    foreach ($path in $expectedMap.Keys) {
+        if (-not $actualMap.ContainsKey($path)) { return $false }
+        if ($expectedMap[$path].Size -ne $actualMap[$path].Size) { return $false }
+        if (-not [string]::Equals(
+                $expectedMap[$path].Hash,
+                $actualMap[$path].Hash,
+                [System.StringComparison]::OrdinalIgnoreCase)) {
+            return $false
+        }
+    }
+    return $true
+}
+
 function Get-Snapshot {
     if (-not (Test-Path $Destination)) { return @() }
-    return @(Get-ChildItem $Destination -Directory |
-             Where-Object { Test-Path (Join-Path $_.FullName 'manifest.json') } |
+    return @(Get-ChildItem -LiteralPath $Destination -Directory |
+             Where-Object {
+                 -not $_.Name.EndsWith('.partial', [System.StringComparison]::OrdinalIgnoreCase) -and
+                 (Test-Path -LiteralPath (Join-Path $_.FullName 'manifest.json'))
+             } |
              Sort-Object Name)
 }
 
@@ -116,42 +239,112 @@ if ($Compare) {
 
 # ---- snapshot ----
 
+Assert-NoReparsePointInExistingPath -Path $Source -Label 'Source'
+Assert-NoReparsePointInTree -Root $Source -Label 'Source'
+Assert-NoReparsePointInExistingPath -Path $Destination -Label 'Destination'
+
+if (Test-PathIsSameOrDescendant -ParentPath $Source -CandidatePath $Destination) {
+    throw "Destination must not be the source directory or a descendant: $Destination"
+}
+
 $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
-$target = Join-Path $Destination $stamp
-New-Item -ItemType Directory -Force -Path $target | Out-Null
+$runId = [guid]::NewGuid().ToString('N')
+$snapshotName = $stamp
+$target = Join-Path $Destination $snapshotName
+if (Test-Path -LiteralPath $target) {
+    $snapshotName = '{0}-{1}' -f $stamp, $runId.Substring(0, 8)
+    $target = Join-Path $Destination $snapshotName
+}
 
-Copy-Item $Source -Destination (Join-Path $target 'Applications') -Recurse -Force
+$stagingName = '{0}.{1}.partial' -f $snapshotName, $runId
+$staging = Join-Path $Destination $stagingName
+$stagingOwned = $false
+$snapshotError = $null
+$manifest = @()
+$profileCount = 0
 
-$manifest = Get-Manifest -Root (Join-Path $target 'Applications')
-$profileCount = @(Get-ChildItem (Join-Path $target 'Applications') -Recurse -Filter 'ProfileInfo.json').Count
+try {
+    New-Item -ItemType Directory -Force -Path $Destination | Out-Null
+    Assert-NoReparsePointInExistingPath -Path $Destination -Label 'Destination'
 
-[pscustomobject]@{
-    takenAt      = (Get-Date).ToString('o')
-    source       = $Source
-    profileCount = $profileCount
-    fileCount    = @($manifest).Count
-    files        = $manifest
-} | ConvertTo-Json -Depth 5 | Set-Content (Join-Path $target 'manifest.json') -Encoding UTF8
+    $createdStaging = New-Item -ItemType Directory -Path $staging
+    if (($createdStaging.Attributes -band [System.IO.FileAttributes]::ReparsePoint) -ne 0) {
+        throw "Refusing reparse-point staging directory: $staging"
+    }
+    $stagingOwned = $true
 
-# Verify the copy rather than assuming it worked.
-$srcManifest = Get-Manifest -Root $Source
-$srcHashes = @($srcManifest | ForEach-Object { $_.Hash } | Sort-Object)
-$dstHashes = @($manifest    | ForEach-Object { $_.Hash } | Sort-Object)
-$identical = (@($srcHashes).Count -eq @($dstHashes).Count) -and
-             (-not (Compare-Object $srcHashes $dstHashes))
+    $stagedApplications = Join-Path $staging 'Applications'
+    Copy-Item $Source -Destination $stagedApplications -Recurse -Force
+    Assert-NoReparsePointInTree -Root $stagedApplications -Label 'Staging'
 
-Write-Host ""
-Write-Host "Snapshot $stamp" -ForegroundColor Cyan
-Write-Host "  location: $target"
-Write-Host "  profiles: $profileCount"
-Write-Host "  files:    $(@($manifest).Count)"
-if ($identical) {
-    Write-Host "  verified: every file hash matches the source" -ForegroundColor Green
-} else {
-    Write-Host "  VERIFY FAILED - copy does not match source" -ForegroundColor Red
+    $manifest = Get-Manifest -Root $stagedApplications
+    $profileCount = @(Get-ChildItem -LiteralPath $stagedApplications -Recurse -Filter 'ProfileInfo.json').Count
+
+    # Preserve path identity: matching only the multiset of hashes can accept
+    # two files whose contents were swapped during the copy.
+    $srcManifest = Get-Manifest -Root $Source
+    if (-not (Test-ManifestMatch -Expected $srcManifest -Actual $manifest)) {
+        throw 'VERIFY FAILED - copy does not match source'
+    }
+
+    [pscustomobject]@{
+        takenAt      = (Get-Date).ToString('o')
+        source       = $Source
+        profileCount = $profileCount
+        fileCount    = @($manifest).Count
+        files        = $manifest
+    } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $staging 'manifest.json') -Encoding UTF8
+
+    # Directory.Move is the publication boundary. A final directory cannot be
+    # observed until the verified staging directory is complete.
+    [System.IO.Directory]::Move($staging, $target)
+    $staging = $null
+    $stagingOwned = $false
+} catch {
+    $snapshotError = $_
+} finally {
+    if ($stagingOwned -and $staging -and (Test-Path -LiteralPath $staging)) {
+        $stagingFullPath = Get-NormalizedFullPath -Path $staging
+        $destinationFullPath = Get-NormalizedFullPath -Path $Destination
+        $stagingItem = Get-Item -LiteralPath $stagingFullPath -Force
+        $stagingParent = [System.IO.Path]::GetDirectoryName($stagingFullPath)
+        $isDirectChild = $stagingParent.Equals(
+            $destinationFullPath,
+            [System.StringComparison]::OrdinalIgnoreCase)
+        $isPartial = [System.IO.Path]::GetFileName($stagingFullPath).EndsWith(
+            '.partial',
+            [System.StringComparison]::OrdinalIgnoreCase)
+        $isReparse = (($stagingItem.Attributes -band [System.IO.FileAttributes]::ReparsePoint) -ne 0)
+
+        if ($isDirectChild -and $isPartial -and -not $isReparse) {
+            try {
+                Remove-Item -LiteralPath $stagingFullPath -Recurse -Force
+            } catch {
+                if (-not $snapshotError) { $snapshotError = $_ }
+                else { Write-Warning "Could not clean staging directory: $stagingFullPath" }
+            }
+        } else {
+            if (-not $snapshotError) {
+                $snapshotError = [System.InvalidOperationException]::new(
+                    "Refusing to clean unexpected or reparse-point staging path: $stagingFullPath")
+            }
+        }
+    }
+}
+
+if ($snapshotError) {
+    Write-Host ""
+    Write-Host $snapshotError.Exception.Message -ForegroundColor Red
     Write-Host ""
     exit 1
 }
+
+Write-Host ""
+Write-Host "Snapshot $snapshotName" -ForegroundColor Cyan
+Write-Host "  location: $target"
+Write-Host "  profiles: $profileCount"
+Write-Host "  files:    $(@($manifest).Count)"
+Write-Host "  verified: every file path and hash matches the source" -ForegroundColor Green
 Write-Host ""
 Write-Host "  Compare later with:  .\snapshot.ps1 -Compare" -ForegroundColor DarkGray
 Write-Host ""
