@@ -1,3 +1,5 @@
+$ErrorActionPreference = 'Stop'
+
 $script:RepoRoot = Split-Path -Parent $PSScriptRoot
 $script:SnapshotScript = Join-Path $script:RepoRoot 'scripts\snapshot.ps1'
 $script:FaultFixture = Join-Path $PSScriptRoot 'fixtures\invoke-snapshot-with-copy-fault.ps1'
@@ -27,9 +29,17 @@ function Invoke-SnapshotProcess {
         $Destination
     ) + $AdditionalArguments
 
-    $output = @(& $script:ShellPath @arguments 2>&1 | ForEach-Object { $_.ToString() })
+    $previousErrorActionPreference = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = 'Continue'
+        $output = @(& $script:ShellPath @arguments 2>&1 | ForEach-Object { $_.ToString() })
+        $exitCode = $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $previousErrorActionPreference
+    }
+
     return [pscustomobject]@{
-        ExitCode = $LASTEXITCODE
+        ExitCode = $exitCode
         Output = ($output -join [Environment]::NewLine)
     }
 }
@@ -62,9 +72,17 @@ function Invoke-SnapshotWithCopyFault {
     )
     if ($MarkerPath) { $arguments += @('-MarkerPath', $MarkerPath) }
 
-    $output = @(& $script:ShellPath @arguments 2>&1 | ForEach-Object { $_.ToString() })
+    $previousErrorActionPreference = $ErrorActionPreference
+    try {
+        $ErrorActionPreference = 'Continue'
+        $output = @(& $script:ShellPath @arguments 2>&1 | ForEach-Object { $_.ToString() })
+        $exitCode = $LASTEXITCODE
+    } finally {
+        $ErrorActionPreference = $previousErrorActionPreference
+    }
+
     return [pscustomobject]@{
-        ExitCode = $LASTEXITCODE
+        ExitCode = $exitCode
         Output = ($output -join [Environment]::NewLine)
     }
 }
