@@ -9,17 +9,9 @@ permissions:
   contents: read
 
 jobs:
-  pester:
-    name: Pester (${{ matrix.name }})
+  windows-powershell:
+    name: Pester (Windows PowerShell 5.1)
     runs-on: windows-2025
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - name: Windows PowerShell 5.1
-            shell: powershell
-          - name: PowerShell 7
-            shell: pwsh
 
     steps:
       - name: Check out repository
@@ -28,7 +20,41 @@ jobs:
           persist-credentials: false
 
       - name: Parse scripts and run Pester
-        shell: ${{ matrix.shell }}
+        shell: powershell
+        run: |
+          Import-Module Pester -RequiredVersion 3.4.0 -Force
+
+          $parseErrors = @()
+          Get-ChildItem -LiteralPath .\scripts -Filter '*.ps1' -File | ForEach-Object {
+              $tokens = $null
+              $errors = $null
+              [System.Management.Automation.Language.Parser]::ParseFile(
+                  $_.FullName,
+                  [ref] $tokens,
+                  [ref] $errors
+              ) | Out-Null
+              $parseErrors += @($errors)
+          }
+          if ($parseErrors.Count -gt 0) {
+              $parseErrors | Format-List
+              exit 1
+          }
+
+          $result = Invoke-Pester -Script .\tests -PassThru
+          if ($result.FailedCount -gt 0) { exit 1 }
+
+  powershell:
+    name: Pester (PowerShell 7)
+    runs-on: windows-2025
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Parse scripts and run Pester
+        shell: pwsh
         run: |
           Import-Module Pester -RequiredVersion 3.4.0 -Force
 
