@@ -45,15 +45,18 @@ Prepares a profile for publication by removing everything that points at a speci
 .\anonymize.ps1 -Path <profile> -Destination <out> -NewName "General starter" -RegenerateGuid -DropMissingPlugins
 ```
 
-Removes actions that embed a filesystem location — `@OpenDirectory`, `@ShellExecute`, `@ExecuteApplication`, and anything else still carrying a drive-letter path — together with their icons, and clears the slots that pointed at them.
+Removes actions that embed a filesystem location — `@OpenDirectory`, `@ShellExecute`, `@ExecuteApplication`, and anything else still carrying a drive-letter or UNC network path — together with their icons, and clears the slots that pointed at them.
 
 **Folder containers are kept and left empty.** They carry the structure of the profile, which is the part worth sharing; the destinations are the part that is personal and worthless to anyone else.
 
 - `-RegenerateGuid` issues a fresh profile GUID and writes into a subdirectory named after it, so the output is directly installable and does not collide with the source
 - `-DropMissingPlugins` clears slots belonging to plugins not installed locally, so a published profile does not ship dependencies even its author lacks
+- `-Force` replaces an existing output only after a fresh sibling staging tree passes the full privacy scan; a failed run leaves the previous output intact
 - `metadata/LoupedeckPackage.yaml` is updated in step, so the manifest cannot contradict the profile
 
-It exits non-zero if any absolute path survives. Display names are left alone and reported for manual review — only the author knows which product, broker, or client names matter.
+The final scan reads every staged file, including nested metadata and assets, and rejects surviving drive-letter paths, UNC paths, and common credential-shaped values. Detected values are never echoed to the log. Source/destination overlap and reparse points (junctions or symbolic links) are rejected before copying.
+
+It exits non-zero on any privacy finding. Display names are left alone and reported for manual review — only the author knows which product, broker, or client names matter. The credential scan is a guardrail, not a replacement for that review.
 
 ## `snapshot.ps1`
 
@@ -65,4 +68,17 @@ Timestamped copy of the profile tree with a SHA256 manifest. Options+ keeps its 
 .\snapshot.ps1 -Compare     # drift against the most recent snapshot
 ```
 
-Every copy is verified by comparing file hashes against the source before reporting success; a mismatch exits non-zero. `-Compare` reports added, removed, and modified files, which doubles as a way to see exactly what Options+ changed after any operation.
+Every copy is built in a uniquely named `.partial` staging directory and verified by relative path, file size, and SHA256 before the manifest is written and the directory is promoted. A mismatch exits non-zero and cannot become the latest valid snapshot. Source/destination overlap and reparse points are rejected before copying; cleanup is limited to staging owned by the current run.
+
+`-Compare` reports added, removed, and modified files, which doubles as a way to see exactly what Options+ changed after any operation.
+
+## Tests
+
+The regression suite uses the Pester 3.4 syntax supported by both Windows PowerShell 5.1 and PowerShell 7:
+
+```powershell
+Import-Module Pester -RequiredVersion 3.4.0 -Force
+Invoke-Pester -Script ..\tests
+```
+
+The same matrix runs in GitHub Actions on Windows. It covers process exit codes, malformed and missing profile data, stale forced outputs, nested metadata and asset leaks, UNC paths, secret-shaped values, source/destination overlap, junction bypasses, staging ownership, failed copies, path-to-hash swaps, and successful publication.
